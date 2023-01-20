@@ -1,6 +1,6 @@
 # remonterletemps2raster
 
-Solution permettant de télécharger les images du site [Remonter le temps](https://remonterletemps.ign.fr/) pour produire une image aérienne sur un territoire.
+Solution permettant de télécharger les images historiques du site [Remonter le temps](https://remonterletemps.ign.fr/) pour produire une image aérienne sur un territoire.
 
 ___
 
