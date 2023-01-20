@@ -19,6 +19,7 @@ do
   # https://stackoverflow.com/questions/34874771/convert-jpg-image-from-grayscale-to-rgb-using-imagemagick
   # convert $folder_mission'/img_jpg/'$file'.jpg' -rotate -180 $folder_mission'/img_jpg/'$file'.jpg'
   
+  # DECOUPER UNE IMAGE
   # -crop left,top      -crop right,bottom
   convert $folder_mission'/img_jpg/'$file'.jpg' -crop +350+1100 -crop -350-375 -colorspace sRGB -type truecolor $folder_mission'/img_jpg_crop/'$file'.jpg'
 
