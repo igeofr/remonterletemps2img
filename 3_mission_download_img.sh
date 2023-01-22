@@ -1,3 +1,5 @@
+
+
 #!/bin/bash
 
 # LECTURE DU FICHIER DE CONFIGURATION
@@ -141,7 +143,7 @@ do
     -f "ESRI Shapefile" \
      -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" \
      $file_pv \
-     $file
+     $file \
     -nlt POLYGON
   else
     echo "creating merge ${h%%.*}.shp"
@@ -149,7 +151,7 @@ do
     -f "ESRI Shapefile" \
      -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" \
      $file_pv \
-     $file
+     $file \
     -nlt POLYGON
   fi
 
