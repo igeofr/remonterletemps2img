@@ -1,5 +1,3 @@
-
-
 #!/bin/bash
 
 # LECTURE DU FICHIER DE CONFIGURATION
