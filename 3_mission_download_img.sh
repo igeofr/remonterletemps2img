@@ -124,14 +124,14 @@ do
   while IFS="," read -r Name ; do
     echo ">>>>>>>" $Name
     echo "URL de téléchargement : https://wxs.ign.fr/$key/jp2/DEMAT.PVA/$id_mission/$Name.jp2"
-    curl "https://wxs.ign.fr/$key/jp2/DEMAT.PVA/$id_mission/$Name.jp2" > $folder_mission'/img_jp2/'$Name'.jp2'
-    gdal_translate -of JPEG $folder_mission'/img_jp2/'$Name'.jp2' $folder_mission'/img_jpg/'$Name'.jpg';
+    #curl "https://wxs.ign.fr/$key/jp2/DEMAT.PVA/$id_mission/$Name.jp2" > $folder_mission'/img_jp2/'$Name'.jp2'
+    #gdal_translate -of JPEG $folder_mission'/img_jp2/'$Name'.jp2' $folder_mission'/img_jpg/'$Name'.jpg';
   done < <(cut -d "," -f${loc_col_a} -s $folder_mission'/csv_liste_img/liste_img.csv'| awk '{if (NR!=1) {print}}')
 
- #JOINTURE ENTRE LE CSV ET LE GEOJSON POUR RECUPERER LES VALEURS DU CSV
- mv $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv' liste.csv
- ogr2ogr -f "ESRI Shapefile" -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN 'liste.csv'.liste ON captures.Name = liste.name" $folder_mission'/couverture_bbox/captures_join.shp' $file
- mv liste.csv $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
+ #JOINTURE ENTRE LE CSV ET LE SHAPEFILE POUR RECUPERER LES VALEURS DU CSV
+ mv $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv' $folder_mission'/liste.csv'
+ ogr2ogr -f "ESRI Shapefile" -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" $folder_mission'/couverture_bbox/captures_join.shp' $file
+ mv $folder_mission'/liste.csv' $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
 
   # UTILISER UN VRT POUR REALISER L'INTERSECTION
   ogr2ogr -f CSV $folder_mission'/csv_exif/'$mission_part'_exif.csv' $folder_mission'/couverture_bbox/captures_join.shp' -dialect sqlite -sql "SELECT '"$folder_mission'/img_jpg/'"'||img||'"'.jpg'"' as SourceFile, y(Centroid(geometry)) as GPSLatitude, x(Centroid(geometry)) as GPSLongitude, replace(date,'-',':')||' 00:00:00' AS DateTimeOriginal FROM captures_join"
