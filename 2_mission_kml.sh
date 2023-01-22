@@ -22,6 +22,7 @@ mkdir $folder_mission'/couverture'
 mkdir $folder_mission'/couverture_bbox'
 mkdir $folder_mission'/csv_attributs'
 mkdir $folder_mission'/csv_liste_img'
+mkdir $folder_mission'/csv_exif'
 
 
 # TELECHARGER LE FICHIER DE LA MISSION
@@ -84,6 +85,6 @@ file=$folder_mission'/couverture/'$id_mission'.shp'
         ogr2ogr -f 'ESRI Shapefile' -append $file $i 
       else
         echo "creating merge $i"
-        ogr2ogr -f 'ESRI Shapefile' --config SHAPE_ENCODING UTF-8 -lco SPATIAL_INDEX=YES -lco ENCODING=UTF-8 $file $i -nlt POLYGON
+        ogr2ogr -f 'ESRI Shapefile' --config SHAPE_ENCODING $ENCODAGE -lco SPATIAL_INDEX=YES -lco ENCODING=$ENCODAGE $file $i -nlt POLYGON
     fi
   done
