@@ -19,6 +19,8 @@ Ensuite vous devez adapter le fichier de `config.env` avec notamment le chemin d
 
 ## Créer des GCP
 
+[Spécifications pour la création des GCP](https://docs.opendronemap.org/gcp/).
+
 ## Lancer [OpenDroneMap](https://opendronemap.org)
 
 ```powershell
