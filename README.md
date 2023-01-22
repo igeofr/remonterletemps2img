@@ -7,7 +7,7 @@ ___
 ## Télécharger et préparer les images
 
 1. Créer un répertoire de travail.
-2. Créer deux sous répertoires `1_missions` et `2_missions`.
+2. Créer deux sous répertoires `1_missions` et `2_mission`.
 3. Ajouter les scripts suivants : 
 
 - `1_missions.sh` : Liste de toutes les missions sur un territoire donné
