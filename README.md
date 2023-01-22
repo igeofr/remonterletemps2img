@@ -10,9 +10,9 @@ ___
 2. Créer deux sous répertoires `1_missions` et `2_mission`.
 3. Ajouter les scripts suivants : 
 
-- `1_missions.sh` : Liste de toutes les missions sur un territoire donné
-- `2_mission_kml.sh` : Permet de télécharger les fichiers kml de la mission
-- `3_mission_download_img.sh` : Permet de télécharger les images dans la BBOX définie et de renseigner  la position et la date de prise de vue sur chaque image
+  - `1_missions.sh` : Liste de toutes les missions sur un territoire donné
+  - `2_mission_kml.sh` : Permet de télécharger les fichiers kml de la mission
+  - `3_mission_download_img.sh` : Permet de télécharger les images dans la BBOX définie et de renseigner  la position et la date de prise de vue sur chaque image
 - `4_mission_crop_img.sh` : Permet de découper les images pour éliminer le contour périphérique
 
 4. Ajouter et adapter le fichier de `config.env` avec notamment le chemin de votre répertoire de travail, la bbox et l'identifiant de la mission. 
