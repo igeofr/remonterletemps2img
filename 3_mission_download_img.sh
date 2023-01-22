@@ -131,11 +131,11 @@ do
  #JOINTURE ENTRE LE CSV ET LE GEOJSON POUR RECUPERER LES VALEURS DU CSV
  mv $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv' liste.csv
  ogr2ogr -f "ESRI Shapefile" -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN 'liste.csv'.liste ON captures.Name = liste.name" $folder_mission'/couverture_bbox/captures_join.shp' $file
- mv liste.csv ${h%%.*}'_propre.csv'
+ mv liste.csv $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
 
   # UTILISER UN VRT POUR REALISER L'INTERSECTION
-  ogr2ogr -f CSV ${h%%.*}'.csv' $folder_mission'/couverture_bbox/captures_join.shp' -dialect sqlite -sql "SELECT '"$folder_mission'/img_jpg/'"'||img||'"'.jpg'"' as SourceFile, y(Centroid(geometry)) as GPSLatitude, x(Centroid(geometry)) as GPSLongitude, replace(date,'-',':')||' 00:00:00' AS DateTimeOriginal FROM captures_join"
+  ogr2ogr -f CSV $folder_mission'/csv_exif/'$mission_part'_exif.csv' $folder_mission'/couverture_bbox/captures_join.shp' -dialect sqlite -sql "SELECT '"$folder_mission'/img_jpg/'"'||img||'"'.jpg'"' as SourceFile, y(Centroid(geometry)) as GPSLatitude, x(Centroid(geometry)) as GPSLongitude, replace(date,'-',':')||' 00:00:00' AS DateTimeOriginal FROM captures_join"
 
-  exiftool -csv=${h%%.*}'.csv' $folder_mission'/img_jpg' -Overwrite_Original -m
+  exiftool -csv=$folder_mission'/csv_exif/'$mission_part'_exif.csv' $folder_mission'/img_jpg' -Overwrite_Original -m
 
 done
