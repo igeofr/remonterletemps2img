@@ -15,7 +15,7 @@ ___
 - `3_mission_download_img.sh` : Permet de télécharger les images dans la BBOX définie et de renseigner  la position et la date de prise de vue sur chaque image
 - `4_mission_crop_img.sh` : Permet de découper les images pour éliminer le contour périphérique
 
-Ensuite vous devez adapter le fichier de `config.env` avec notamment le chemin de votre répertoire de travail, la bbox et l'identifiant de la mission. 
+4. Ajouter et adapter le fichier de `config.env` avec notamment le chemin de votre répertoire de travail, la bbox et l'identifiant de la mission. 
 
 > Les scripts doivent ensuite être lancés dans l'ordre. Toutefois, le script 1 est facultatif, si vous connaissez déjà l'identifiant de la mission.
 
