@@ -1,4 +1,4 @@
-# remonterletemps2raster
+# remonterletemps2img
 
 Solution permettant de télécharger les images historiques du site [Remonter le temps](https://remonterletemps.ign.fr/) pour produire une image aérienne sur un territoire.
 
