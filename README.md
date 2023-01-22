@@ -6,7 +6,9 @@ ___
 
 ## Télécharger et préparer les images
 
-Créer un répertoire de travail et y ajouter les scripts suivants : 
+1. Créer un répertoire de travail.
+2. Créer deux sous répertoires `1_missions` et `2_missions`.
+3. Ajouter les scripts suivants : 
 
 - `1_missions.sh` : Liste de toutes les missions sur un territoire donné
 - `2_mission_kml.sh` : Permet de télécharger les fichiers kml de la mission
