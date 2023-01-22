@@ -23,7 +23,7 @@ Ensuite vous devez adapter le fichier de `config.env` avec notamment le chemin d
 
 ## Lancer [OpenDroneMap](https://opendronemap.org)
 
-Commande minimum recommandée mais à adapter suivant vos images :
+Commande minimum recommandée mais qu'il convient d'adapter suivant les images :
 
 ```powershell
 run --project-path C:\ODM 19XX --fast-orthophoto --skip-3dmodel --min-num-features 30000 --feature-quality high --orthophoto-resolution 50 --skip-report --gcp "C:\ODM\19XX\images\gcp_list.txt"
