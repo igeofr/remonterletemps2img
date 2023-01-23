@@ -20,19 +20,32 @@ do
   echo '################################################################'
   echo 'Nom du fichier kml : ' $mission_part
 
-  sed -i "s/<value\/>/<value><\/value>/g" $h
+  if [ "$(uname)" == "Darwin" ]; then
+   sed -i '' "s/<value\/>/<value><\/value>/g" $h
+ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+   sed -i "s/<value\/>/<value><\/value>/g" $h
+ fi
+
 
   # PERMET L'EXTRACTION DES ATTRIBUTS DE CHACUNE DES IMG
   awk -F"[><]" '/<\/Data>/{a="";next} /<Data>/{a=1;next} a && /<value>/{print $3}' $folder_mission'/kml/'${h##*/} > $folder_mission'/csv_attributs/'$mission_part'_value.csv'
   awk -F"[><]" '/<\/Data>/{a="";next} /<Data>/{a=1;next} a && /<displayName>/{print $3}' $folder_mission'/kml/'${h##*/} > $folder_mission'/csv_attributs/'$mission_part'_displayName.csv'
 
-  sed "s/ //g" $folder_mission'/csv_attributs/'$mission_part'_value.csv' > $folder_mission'/csv_attributs/'$mission_part'_value_origin.csv'
-  sed "s/ //g" $folder_mission'/csv_attributs/'$mission_part'_displayName.csv' > $folder_mission'/csv_attributs/'$mission_part'_displayName_origin.csv'
+  if [ "$(uname)" == "Darwin" ]; then
+    sed -i '' "s/ //g" $folder_mission'/csv_attributs/'$mission_part'_value.csv' > $folder_mission'/csv_attributs/'$mission_part'_value_origin.csv'
+    sed -i '' "s/ //g" $folder_mission'/csv_attributs/'$mission_part'_displayName.csv' > $folder_mission'/csv_attributs/'$mission_part'_displayName_origin.csv'
 
+  elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+   sed "s/ //g" $folder_mission'/csv_attributs/'$mission_part'_value.csv' > $folder_mission'/csv_attributs/'$mission_part'_value_origin.csv'
+   sed "s/ //g" $folder_mission'/csv_attributs/'$mission_part'_displayName.csv' > $folder_mission'/csv_attributs/'$mission_part'_displayName_origin.csv'
 
-  count=$(awk '/id/{++n; if (n==2) { print NR; exit}}' $folder_mission'/csv_attributs/'$mission_part'_displayName.csv')
-  number=`expr $count - 1`
-  echo $number
+ fi
+
+ 
+
+ count=$(awk '/id/{++n; if (n==2) { print NR; exit}}' $folder_mission'/csv_attributs/'$mission_part'_displayName.csv')
+ number=`expr $count - 1`
+ echo $number
 
   # PASSAGE DE LIGNES EN COLONNES
   count=1
@@ -66,7 +79,19 @@ do
   line=$(head -n 1 $folder_mission'/csv_attributs/'$mission_part'_displayName_transpose.csv')
 
   # AJOUTE LES NOMS DE CHAMPS
+
+  if [ "$(uname)" == "Darwin" ]; then
+   sed -i '' "1i\\
+   $line
+   " $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
+ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
   sed -i 1i"$line" $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
+fi
+
+
+
+
+
 
   # IDENTIFICATION DES PRISES DE VUE DE LA MISSION QUI SE TROUVENT DANS LA BBOX
   file=$folder_mission'/couverture_bbox/captures.shp'
@@ -94,12 +119,12 @@ do
   ogr2ogr -f CSV $folder_mission'/couverture_bbox/captures.csv' $folder_mission'/couverture_bbox/captures.shp' -sql "SELECT Name FROM captures"
 
   # TROUVE LE NUMERO DE LA COLONNE JP2
-  cut -d, -f1 --complement $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv' > $folder_mission'/csv_attributs/'$mission_part'_value_transpose_noid.csv'
+  cut -d, -f2- $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv' > $folder_mission'/csv_attributs/'$mission_part'_value_transpose_noid.csv'
   loc_col_cap=$( awk '
     BEGIN{
       FS=","
     }
-    {
+    { 
       gsub(/\r/,"")
       for(i=1;i<=NF;i++){
        if($i=="JP2"){
@@ -115,12 +140,11 @@ do
   # JOINTURE ENTRE LES DEUX FICHIERS
   awk -F, 'FNR==NR{a[$1]=$'$loc_col_cap';next} $1 in a{$2=a[$1]} 1' OFS=',' $folder_mission'/csv_attributs/'$mission_part'_value_transpose_noid.csv' $folder_mission'/couverture_bbox/captures.csv' > $folder_mission'/csv_liste_img/liste_img.csv'
 
-
   # PERMET DE MODIFIER L'ENTETE
   if [ "$(uname)" == "Darwin" ]; then
     sed -i '' '1s/.*/Name,jp2/' $folder_mission'/csv_liste_img/liste_img.csv'
   elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-      sed -i '1s/.*/Name,jp2/' $folder_mission'/csv_liste_img/liste_img.csv'
+    sed -i '1s/.*/Name,jp2/' $folder_mission'/csv_liste_img/liste_img.csv'
   fi
 
   # PERMET D'EXTRAIRE LE NUMERO DE LA COLONNE
@@ -160,30 +184,30 @@ do
  mv $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv' $folder_mission'/liste.csv'
 
  file_pv=$folder_mission'/couverture_bbox/captures_join.shp'
-  if [ -f "$file" ]
-  then
-    echo "merge ${h%%.*}.shp"
-    ogr2ogr \
-    -append \
-    -f "ESRI Shapefile" \
-     -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" \
-     $file_pv \
-     $file \
-    -nlt POLYGON
-  else
-    echo "creating merge ${h%%.*}.shp"
-    ogr2ogr \
-    -f "ESRI Shapefile" \
-     -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" \
-     $file_pv \
-     $file \
-    -nlt POLYGON
-  fi
+ if [ -f "$file" ]
+ then
+  echo "merge ${h%%.*}.shp"
+  ogr2ogr \
+  -append \
+  -f "ESRI Shapefile" \
+  -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" \
+  $file_pv \
+  $file \
+  -nlt POLYGON
+else
+  echo "creating merge ${h%%.*}.shp"
+  ogr2ogr \
+  -f "ESRI Shapefile" \
+  -sql "SELECT liste.name AS name,liste.NUMCLI AS numcli, liste.IDCLICHE AS idcliche, liste.RES AS res, liste.ORIENTATION AS orientation, liste.DATE AS date, liste.JP2 AS img   FROM captures LEFT JOIN '$folder_mission/liste.csv'.liste ON captures.Name = liste.name" \
+  $file_pv \
+  $file \
+  -nlt POLYGON
+fi
 
-  mv $folder_mission'/liste.csv' $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
+mv $folder_mission'/liste.csv' $folder_mission'/csv_attributs/'$mission_part'_value_transpose.csv'
 
 done
-  #
-  # ogr2ogr -f CSV $folder_mission'/csv_exif/list_exif.csv' $folder_mission'/couverture_bbox/captures_join.shp' -dialect sqlite -sql "SELECT '"$folder_mission'/img_jpg/'"'||img||'"'.jpg'"' as SourceFile, y(Centroid(geometry)) as GPSLatitude, x(Centroid(geometry)) as GPSLongitude, replace(date,'-',':')||' 00:00:00' AS DateTimeOriginal FROM captures_join"
-  #
-  # exiftool -csv=$folder_mission'/csv_exif/list_exif.csv' $folder_mission'/img_jpg' -Overwrite_Original -m
+
+ogr2ogr -f CSV $folder_mission'/csv_exif/list_exif.csv' $folder_mission'/couverture_bbox/captures_join.shp' -dialect sqlite -sql "SELECT '"$folder_mission'/img_jpg/'"'||img||'"'.jpg'"' as SourceFile, y(Centroid(geometry)) as GPSLatitude, x(Centroid(geometry)) as GPSLongitude, replace(date,'-',':')||' 00:00:00' AS DateTimeOriginal FROM captures_join"
+
+exiftool -csv=$folder_mission'/csv_exif/list_exif.csv' $folder_mission'/img_jpg' -Overwrite_Original -m
